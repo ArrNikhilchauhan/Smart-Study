@@ -1,0 +1,90 @@
+/* Animated Background */
+.container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 72vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+  
+  .background-animation {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    /* background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb); */
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease infinite;
+    z-index: -1;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Form Styles */
+  .form-container {
+    background: rgba(255, 255, 255, 0.9);
+    width: 20vw;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+  
+  .form h2 {
+    margin-bottom: 20px;
+  }
+  .form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column
+  }
+  
+  .form input {
+    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 17vw;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .gradient-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+  }
+  
+  .btn:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Toggle Button */
+  .toggle-btn {
+    background: none;
+    color: #764ba2;
+    border: none;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+  }
+  

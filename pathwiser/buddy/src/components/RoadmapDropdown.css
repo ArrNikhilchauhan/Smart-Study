@@ -1,0 +1,92 @@
+/* RoadmapDropdown.css */
+.dropdown-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 2rem;
+    z-index: 100;
+  }
+  
+  .dropdown-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+  }
+  
+  .dropdown-btn:hover {
+    background: #0069d9;
+  }
+  
+  .dropdown-btn.active {
+    background: #0056b3;
+  }
+  
+  .dropdown-arrow {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .dropdown-btn.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    z-index: 110;
+    opacity: 0;
+    transform-origin: top center;
+  }
+  
+  .dropdown-item {
+    width: 100%;
+    padding: 12px 20px;
+    text-align: center;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: background 0.2s ease;
+  }
+  
+  .dropdown-item:hover {
+    background: #f8f9fa;
+  }
+  
+  .dropdown-item.selected {
+    background: #e3f2fd;
+    color: #007bff;
+    font-weight: 500;
+  }
+  
+  /* Dark Mode */
+  .dark-mode .dropdown-menu {
+    background: #2d3748;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .dropdown-item {
+    color: #f8f9fa;
+  }
+  
+  .dark-mode .dropdown-item:hover {
+    background: #4a5568;
+  }

@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "pathwiser",
+			"path": "../../.."
+		},
+		{
+			"name": "Backend",
+			"path": "../../../../study planner/Backend"
+		},
+		{
+			"name": "src",
+			"path": "../../../../code-review-main/BackEnd/src"
+		}
+	],
+	"settings": {}
+}

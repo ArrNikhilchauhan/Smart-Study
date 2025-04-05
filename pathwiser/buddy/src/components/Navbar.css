@@ -1,0 +1,100 @@
+/* src/components/Navbar.css */
+.nav {
+    display: flex;
+    justify-content: space-around !important;
+    align-items: center;
+    padding: 3px 0;
+    height: 8vh;
+    background: rgba(10, 10, 78, 0.263); 
+    /* Reduced opacity for transparency */
+    backdrop-filter: blur(12px) saturate(180%);
+    border-bottom: 1px solid rgba(32, 34, 192, 0.236); /* More transparent border */
+    position: sticky;
+    top: 0;
+    background-image: linear-gradient(
+        135deg,
+        rgba(218, 218, 235, 0.533),
+        rgba(18, 51, 184, 0.335),
+        rgba(151, 151, 207, 0.575)
+      );
+      background-size: 200% 200%;
+      animation: moveGradient 3s ease infinite;
+    }
+    .logo{
+        font-size: xx-large;
+        font-weight: bold;
+        cursor: pointer;
+        color: rgb(29, 29, 213);
+    }
+    ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    @keyframes moveGradient {
+      0% {
+        background-position: 0% 0%;
+      }
+      50% {
+        background-position: 100% 100%;
+      }
+      100% {
+        background-position: 0% 0%;
+      }
+      
+    
+}
+
+.nav li {
+    list-style-type: none;
+    margin: 0 1.5rem;
+    font-size: x-large;
+    font-weight: 500;
+    color: rgb(241, 245, 249); /* Slightly transparent text */
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+}
+
+.nav li:hover {
+    color: #000000;
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05); /* Subtle hover background */
+}
+
+.nav li::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: rgb(77, 208, 255); /* Semi-transparent underline */
+    transition: width 0.3s ease;
+}
+
+.nav li:hover::after {
+    width: 80%;
+}
+
+.ask {
+    color: rgba(110, 231, 183, 0.9) !; 
+    font-weight: 600;
+    position: relative;
+}
+
+.ask::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -5px;
+    right: -5px;
+    bottom: -2px;
+    /* background: rgba(110, 231, 183, 0.1); */
+    border-radius: 0.5rem;
+    z-index: -1;
+}
