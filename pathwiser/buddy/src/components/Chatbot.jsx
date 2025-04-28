@@ -7,6 +7,7 @@ const Content = () => {
   // Access the state passed from Home.jsx
   const location = useLocation();
   const { response } = location.state || { response: 'No response received' };
+  console.log(response)
 
   return (
     <div className='chatbot'>

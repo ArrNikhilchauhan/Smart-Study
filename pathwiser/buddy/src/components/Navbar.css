@@ -26,7 +26,7 @@
         cursor: pointer;
         color: rgb(29, 29, 213);
     }
-    ul{
+    .list{
         display: flex;
         justify-content: center;
         align-items: center;

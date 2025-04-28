@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import Navbar from './Navbar';
-const genAI = new GoogleGenerativeAI('AIzaSyB03pejTIoV0MXVKxjZG-mvc43ZA3sTAEw');
+const genAI = new GoogleGenerativeAI('Your API key here');
 
 const Home = () => {
   const text = useRef(null);

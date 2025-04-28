@@ -8,7 +8,6 @@ import "highlight.js/styles/github-dark.css";
 import axios from 'axios';
 import './code.css';
 
-// Add C++ syntax highlighting
 prism.languages.cpp = prism.languages.extend('clike', {
   'keyword': /\b(alignas|alignof|asm|auto|bool|break|case|catch|char|char8_t|char16_t|char32_t|class|concept|const|consteval|constexpr|constinit|const_cast|continue|co_await|co_return|co_yield|decltype|default|delete|do|double|dynamic_cast|else|enum|explicit|export|extern|false|float|for|friend|goto|if|inline|int|long|mutable|namespace|new|noexcept|nullptr|operator|private|protected|public|register|reinterpret_cast|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)\b/
 });
@@ -52,19 +51,24 @@ int main() {
     try {
       const response = await axios.post('http://localhost:3000/ai/get-review', { code });
       
-      // Handle JSON response properly
-      if (response.data && response.data.status) {
-        setReview(response.data);
-      } else {
-        setReview({
-          status: 'error',
-          message: 'Unexpected response format from server'
-        });
-      }
+      // Handle response structure properly
+      const result = {
+        status: response.data?.status || 'error',
+        summary: response.data?.summary || 'No summary provided',
+        explanation: response.data?.explanation || '',
+        issues: response.data?.issues || [],
+        corrected_code: response.data?.corrected_code || ''
+      };
+
+      console.log(response.data);
+      setReview(result);
     } catch (error) {
       setReview({
         status: 'error',
-        message: error.response?.data?.error || 'Failed to get review'
+        summary: 'Analysis failed',
+        explanation: error.response?.data?.details || error.message,
+        issues: [],
+        corrected_code: ''
       });
     } finally {
       setIsLoading(false);
@@ -74,98 +78,117 @@ int main() {
   const renderReviewContent = () => {
     if (!review) return null;
 
-    switch (review.status) {
-      case 'correct':
-        return (
-          <div className="correct-message">
-            ✅ {review.message}
+    // Extract corrected code from issues
+    const correctedCode = review.issues
+      .filter(issue => issue.corrected_code)
+      .map(issue => issue.corrected_code)
+      .join('\n');
+
+    return (
+      <div className={`review-container ${review.status}`}>
+        <div className="status-header">
+          <div className="status-icon">
+            {review.status === 'correct' ? '✅' : '⚠️'}
           </div>
-        );
+          <h3>{review.summary}</h3>
+        </div>
 
-      case 'needs_fix':
-        return (
-          <div className="review-content">
-            <div className="issues-section">
-              <h3>Identified Issues:</h3>
-              <ul>
-                {review.issues?.map((issue, index) => (
-                  <li key={index} className={`issue ${issue.severity}`}>
-                    <strong>{issue.type.toUpperCase()}</strong>: {issue.description}
-                    {issue.line && ` (Line: ${issue.line})`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {review.corrected_code && (
-              <div className="corrected-code">
-                <h3>Suggested Fix:</h3>
-                <pre>
-                  <code className="language-cpp">
-                    {review.corrected_code}
-                  </code>
-                </pre>
+        {review.status === 'needs_fix' && (
+          <>
+            {review.issues?.length > 0 && (
+              <div className="issues-section">
+                <h4>Identified Issues:</h4>
+                <ul>
+                  {review.issues.map((issue, index) => (
+                    <li key={index} className={`issue ${issue.severity}`}>
+                      <span className="issue-type">{issue.type}</span>
+                      <span className="issue-description">{issue.description}</span>
+                      <span className="severity">{issue.severity}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
+          </>
+        )}
 
-            {review.explanation && (
-              <div className="explanation">
-                <h3>Explanation:</h3>
-                <Markdown rehypePlugins={[rehypeHighlight]}>
-                  {review.explanation}
-                </Markdown>
-              </div>
-            )}
+        {correctedCode && (
+          <div className="corrected-code-section">
+            <h4>Corrected Code:</h4>
+            <Editor
+              value={correctedCode}
+              onValueChange={() => {}} // Read-only, no changes allowed
+              highlight={code => prism.highlight(code, prism.languages.cpp, "cpp")}
+              padding={15}
+              className="code-editor"
+              style={{
+                fontFamily: '"Fira Code", monospace',
+                fontSize: '14px',
+                minHeight: '100px',
+                backgroundColor: '#2d2d2d',
+                color: '#ffffff'
+              }}
+              readOnly={true}
+            />
           </div>
-        );
+        )}
 
-      default:
-        return (
-          <div className="error-message">
-            ❌ {review.message || 'Unknown error occurred'}
+        {review.explanation && (
+          <div className="explanation">
+            <h4>Explanation:</h4>
+            <Markdown rehypePlugins={[rehypeHighlight]}>
+              {review.explanation}
+            </Markdown>
           </div>
-        );
-    }
+        )}
+
+        {review.status === 'error' && (
+          <div className="error-details">
+            {review.explanation}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
-    <>
-      <main>
-        <div className="left">
-          <div className="code">
-            <Editor
-              value={code}
-              onValueChange={code => setCode(code)}
-              highlight={code => prism.highlight(code, prism.languages.cpp, "cpp")}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 16,
-                border: "1px solid #ddd",
-                borderRadius: "5px",
-                height: "100%",
-                width: "100%"
-              }}
-            />
-          </div>
+    <div className="code-review-app">
+      <div className="editor-pane">
+        <div className="editor-header">
+          <h2>C++ Code Editor</h2>
           <button
             onClick={reviewCode}
-            className="review-button"
             disabled={isLoading}
+            className={isLoading ? 'loading' : ''}
           >
             {isLoading ? (
-              <div className="loading">
+              <>
                 <div className="spinner"></div>
                 Analyzing...
-              </div>
+              </>
             ) : 'Get Code Review'}
           </button>
         </div>
-        <div className="right">
-          {renderReviewContent()}
-        </div>
-      </main>
-    </>
+        
+        <Editor
+          value={code}
+          onValueChange={setCode}
+          highlight={code => prism.highlight(code, prism.languages.cpp, "cpp")}
+          padding={15}
+          className="code-editor"
+          style={{
+            fontFamily: '"Fira Code", monospace',
+            fontSize: '14px',
+            minHeight: '400px'
+          }}
+        />
+      </div>
+
+      <div className="review-pane">
+        <h2 className="review-title">Code Analysis</h2>
+        {renderReviewContent()}
+      </div>
+    </div>
   );
 }
 

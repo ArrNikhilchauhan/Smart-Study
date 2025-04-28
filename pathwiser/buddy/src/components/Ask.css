@@ -88,6 +88,13 @@ body.dark-mode {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.chat-message ul {
+  display: block; /* Ensure lists are not flex */
+  list-style-type: disc; /* Use default bullet style */
+  margin: 10px 0;
+  padding-left: 20px; 
+}
+
 .chat-message.answer {
   align-self: flex-start;
   border-bottom-left-radius: 6px;

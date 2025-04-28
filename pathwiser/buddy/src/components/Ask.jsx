@@ -78,31 +78,7 @@ User Query: ${question}`;
   const darkref=useRef(null);
   const [isdark,setisdark]=useState(false);
 
-  const mode=()=>{
-    if (isdark){
-        chatContainerRef.current.style.backgroundColor="white";
-        darkref.current.style.backgroundColor="white";
-        chatref.current.style.backgroundColor="white";
-        textref.current.style.backgroundColor="white";
-        chatContainerRef.current.style.color="#212121";
-        chatref.current.style.color="#212121";
-        darkref.current.style.color="#212121";
-        textref.current.style.color="#212121";
-        
-    }
-    else{
-        chatContainerRef.current.style.backgroundColor="#212121";
-        darkref.current.style.backgroundColor="#212121";
-        chatref.current.style.backgroundColor="#212121";
-        textref.current.style.backgroundColor="#212121";
-        chatContainerRef.current.style.color="white";
-        darkref.current.style.color="white";
-        chatref.current.style.color="white";
-        textref.current.style.color="white";
-    }
 
-    setisdark(!isdark);
-  }
 
   return (
     <div className="chat-container">

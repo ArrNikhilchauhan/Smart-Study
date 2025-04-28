@@ -8,15 +8,15 @@ import pdfjsLib from 'pdfjs-dist';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import {generateContent} from './ai.service.js' // Adjust path
-import jwt from 'jsonwebtoken'
-import bodyParser from 'body-parser';
-import fetch from 'node-fetch'
-import bcrypt from 'bcrypt'
+// import jwt from 'jsonwebtoken'
+// import bodyParser from 'body-parser';
+// import fetch from 'node-fetch'
+// import bcrypt from 'bcrypt'
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 const { createCanvas } = canvas;
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -27,152 +27,31 @@ global.DOMMatrix = createCanvas(1, 1).DOMMatrix;
 global.ImageData = canvas.ImageData;
 global.Path2D = canvas.Path2D;
 const upload = multer({ dest: 'uploads/' });
-const genAI = new GoogleGenerativeAI('AIzaSyB03pejTIoV0MXVKxjZG-mvc43ZA3sTAEw');
+const genAI = new GoogleGenerativeAI('your API key here');
 
 // Set the worker path using import.meta.resolve (Node.js 20+)
 pdfjsLib.GlobalWorkerOptions.workerSrc = resolve(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.js');
-const users = [];
-const SECRET_KEY = "010020";
-
-
-// Signup Endpoint
-app.post("/signup", async (req, res) => {
-  const { email, password, username } = req.body;
-  
-  // Check if the user already exists
-  const existingUser = users.find((user) => user.email === email);
-  if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
-  }
-  
-  try {
-    // Hash the password with a salt rounds value of 10
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Save the new user in the "database"
-    users.push({ email, password: hashedPassword, username });
-    
-    // Respond with a success message
-    res.status(201).json({ message: "User registered successfully!" });
-  } catch (error) {
-    console.error("Error during signup:", error);
-    res.status(500).json({ message: "Internal server error during signup" });
-  }
-});
-
-// Login Endpoint
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  
-  // Find the user by email
-  const user = users.find((user) => user.email === email);
-  if (!user) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-  
-  try {
-    // Compare the entered password with the stored hashed password
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    
-    // Create a JWT token valid for 1 hour
-    const token = jwt.sign(
-      { email: user.email, username: user.username },
-      SECRET_KEY,
-      { expiresIn: "1h" }
-    );
-    
-    // Return the token to the client
-    res.json({ token });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Internal server error during login" });
-  }
-});
-
-
-// Protected Route Example
-app.get("/profile", (req, res) => {
-  // The token is expected to be passed in the "Authorization" header as "Bearer <token>"
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-  
-  const token = authHeader.split(" ")[1];
-  
-  try {
-    // Verify the token
-    const decoded = jwt.verify(token, SECRET_KEY);
-    
-    // Respond with a welcome message or user information
-    res.json({ message: `Welcome, ${decoded.username}!`, user: decoded });
-  } catch (error) {
-    console.error("Error verifying token:", error);
-    res.status(401).json({ message: "Unauthorized access" });
-  }
-});
-
-// =======================
-// Optionally: reCAPTCHA Verification Endpoint
-// (For demonstration—In production, verify the reCAPTCHA token before processing authentication)
-// =======================
-// const fetch = require("node-fetch");
-
-app.post("/verify-recaptcha", async (req, res) => {
-  const { token } = req.body;
-  const secretKey = "YOUR_SECRET_KEY_FOR_RECAPTCHA"; // Replace with your actual secret key from Google
-  
-  try {
-    const response = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`,
-      { method: "POST" }
-    );
-    const data = await response.json();
-    if (data.success) {
-      res.json({ message: "reCAPTCHA verified successfully" });
-    } else {
-      res.status(400).json({ message: "reCAPTCHA verification failed" });
-    }
-  } catch (err) {
-    console.error("Error verifying reCAPTCHA:", err);
-    res.status(500).json({ message: "Internal server error during reCAPTCHA verification" });
-  }
-});
-
-
-
-// Add express.json() middleware at app level (top of your routes)
-
 // Then modify your route to remove express.json() from individual route
 app.post('/ai/get-review', async (req, res) => {
   try {
     const { code } = req.body;
     
     if (!code || typeof code !== 'string') {
-      return res.status(400).json({ error: "Invalid code input" });
+      return res.status(400).json({ 
+        status: 'error',
+        summary: 'Invalid input',
+        explanation: 'No code provided'
+      });
     }
 
-    const prompt = `Review this code:\n${code}`;
-    const review = await generateContent(prompt);
-    
-    // Parse the JSON response if needed
-    let reviewData;
-    try {
-      reviewData = JSON.parse(review);
-    } catch {
-      reviewData = { status: 'needs_fix', message: review };
-    }
-    
-    res.json(reviewData);
+    const review = await generateContent(code);
+    res.json(review);
 
   } catch (error) {
-    console.error('Code review error:', error);
-    res.status(500).json({ 
-      error: "Code review failed",
-      message: error.message
+    res.status(500).json({
+      status: 'error',
+      summary: 'Server error',
+      explanation: error.message
     });
   }
 });
